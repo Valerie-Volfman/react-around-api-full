@@ -5,21 +5,21 @@ const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    default: "Jacques Cousteau",
+    default: 'Jacques Cousteau',
     required: true,
     minlength: 2,
     maxlength: 30,
   },
   about: {
     type: String,
-    default: "Explorer",
+    default: 'Explorer',
     required: true,
     minlength: 2,
     maxlength: 30,
   },
   avatar: {
     type: String,
-    default: "https://pictures.s3.yandex.net/resources/avatar_1604080799.jpg",
+    default: 'https://pictures.s3.yandex.net/resources/avatar_1604080799.jpg',
     validate: {
       validator: (v) => {
         /^(http|https):\/\/[^ "]+$/.test(v);
@@ -32,15 +32,15 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    validator: (v) => {
+    validator: () => {
       validator.isEmail('foo@bar.com');
-    }
+    },
   },
   password: {
     type: String,
     required: true,
     minlength: 8,
-    select: false
+    select: false,
   },
 });
 
