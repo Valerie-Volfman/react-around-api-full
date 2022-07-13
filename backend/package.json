@@ -28,6 +28,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "celebrate": "^15.0.1",
+    "cors": "^2.8.5",
     "editorconfig": "^0.15.3",
     "eslint-plugin-react": "^7.30.1",
     "express": "^4.18.1",

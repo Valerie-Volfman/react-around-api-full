@@ -32,8 +32,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    validator: () => {
-      validator.isEmail('foo@bar.com');
+    validator: (data) => {
+      validator.isEmail(data);
     },
   },
   password: {

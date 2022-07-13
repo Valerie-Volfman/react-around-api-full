@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
+const cors = require('cors');
 const { errors, celebrate, Joi } = require('celebrate');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
@@ -8,37 +9,20 @@ const { createUser, login } = require('./controllers/user');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const auth = require('./middlewares/auth');
 
-const app = express();
-app.use(express.json());
-app.use(helmet());
-mongoose.connect('mongodb://localhost:27017/aroundb');
-
 const { PORT = 3001 } = process.env;
 
+const app = express();
+mongoose.connect('mongodb://localhost:27017/aroundb');
+app.use(express.json());
+app.use(helmet());
+app.use(errors());
+app.use(cors());
+app.options('*', cors());
 app.use(requestLogger);
 
-app.post(
-  '/signin',
-  celebrate({
-    body: Joi.object().keys({
-      email: Joi.string().required().min(4).max(30)
-        .email(),
-      password: Joi.string().required().min(8),
-    }),
-  }),
-  login,
-);
-app.post(
-  '/signup',
-  celebrate({
-    body: Joi.object().keys({
-      email: Joi.string().required().min(4).max(30)
-        .email(),
-      password: Joi.string().required().min(8),
-    }),
-  }),
-  createUser,
-);
+app.post('/signin', login);
+
+app.post('/signup', createUser);
 
 app.use(auth);
 
@@ -49,11 +33,9 @@ app.get('*', (req, res) => {
   res.send({ message: 'Requested resource not found' });
 });
 
-app.use(errorLogger);
-
-app.use(errors());
+//app.use(errorLogger);
 app.use((err, req, res, next) => {
-  res.status(err.statusCode).send({ message: err.message });
+  console.log(err);
   if (err.name === 'CastError') {
     res.status(400).send({ message: 'Invalid data' });
   }

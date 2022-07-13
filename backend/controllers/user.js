@@ -25,9 +25,9 @@ module.exports.createUser = (req, res, next) => {
           avatar: user.avatar,
           email: user.email,
           _id: user._id,
-        }));
+        }))
+        .catch(next);
     })
-    .catch(next);
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
@@ -66,7 +66,7 @@ module.exports.getUsers = (req, res, next) => {
 
 module.exports.updateProfile = (req, res, next) => {
   /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
-  User.updateOne(
+  User.findByIdAndUpdate(
     req.user._id,
     { runValidators: true },
     { new: true },
@@ -75,7 +75,7 @@ module.exports.updateProfile = (req, res, next) => {
       if (!user) {
         throw new FoundError(404, 'No user found with that id');
       }
-      res.send({ data: user });
+      res.send({ data: user});
     })
     .catch(next);
 };
