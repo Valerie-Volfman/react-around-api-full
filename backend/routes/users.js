@@ -3,7 +3,11 @@ const validator = require('validator');
 const { celebrate, Joi } = require('celebrate');
 
 const {
-  getUser, getUsers, updateProfile, updateAvatar, getCurrentUser,
+  getUser,
+  getUsers,
+  updateProfile,
+  updateAvatar,
+  getCurrentUser,
 } = require('../controllers/user');
 
 const validateURL = (value, helpers) => {

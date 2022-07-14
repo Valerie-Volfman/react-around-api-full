@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
-const FoundError = require('../errors/found-err');
+const ServerError = require('../errors/server-err');
+
+const options = { runValidators: true, new: true };
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -19,7 +21,7 @@ module.exports.createUser = (req, res, next) => {
         email,
         password: hash,
       })
-        .then((user) => res.send({
+        .then((user) => res.status(201).send({
           name: user.name,
           about: user.about,
           avatar: user.avatar,
@@ -27,14 +29,14 @@ module.exports.createUser = (req, res, next) => {
           _id: user._id,
         }))
         .catch(next);
-    })
+    });
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new FoundError(404, 'No user found with that id');
+        throw new ServerError(404, 'No user found with that id');
       }
       res.send({
         name: user.name,
@@ -51,7 +53,7 @@ module.exports.getUser = (req, res, next) => {
   User.findById(req.params.id)
     .then((user) => {
       if (!user) {
-        throw new FoundError(404, 'No user found with that id');
+        throw new ServerError(404, 'No user found with that id');
       }
       res.send({ data: user });
     })
@@ -65,31 +67,31 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.updateProfile = (req, res, next) => {
-  /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
+  const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
-    { runValidators: true },
-    { new: true },
+    { name, about },
+    options,
   )
     .then((user) => {
       if (!user) {
-        throw new FoundError(404, 'No user found with that id');
+        throw new ServerError(404, 'No user found with that id');
       }
-      res.send({ data: user});
+      res.send({ data: user });
     })
     .catch(next);
 };
 
 module.exports.updateAvatar = (req, res, next) => {
-  /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
-  User.updateOne(
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(
     req.user._id,
-    { runValidators: true },
-    { new: true },
+    { avatar },
+    options,
   )
     .then((user) => {
       if (!user) {
-        throw new FoundError(404, 'No user found with that id');
+        throw new ServerError(404, 'No user found with that id');
       }
       res.send({ data: user });
     })

@@ -1,5 +1,5 @@
 const Card = require('../models/card');
-const FoundError = require('../errors/found-err');
+const ServerError = require('../errors/server-err');
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
@@ -17,7 +17,7 @@ module.exports.getCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        throw new FoundError(404, 'No card found with that id');
+        throw new ServerError(404, 'No card found with that id');
       }
       res.send({ data: card });
     })
@@ -28,10 +28,10 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findOne({ _id: req.params.cardId })
     .then((card) => {
       if (!card) {
-        throw new FoundError(404, 'No card found with that id');
+        throw new ServerError(404, 'No card found with that id');
       }
       if (card.owner.valueOf() !== req.user._id) {
-        throw new FoundError(403, 'Forbidden error');
+        throw new ServerError(403, 'Forbidden error');
       }
       return Card.findOneAndDelete({ _id: req.params.cardId });
     })
@@ -39,32 +39,32 @@ module.exports.deleteCard = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.likeCard = (req, next) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
     { $addToSet: { likes: req.user._id } }, // add _id to the array if it's not there yet
     { new: true },
   )
     .then((card) => {
       if (!card) {
-        throw new FoundError(404, 'No card found with that id');
+        throw new ServerError(404, 'No card found with that id');
       }
+      res.send(card);
     })
     .catch(next);
 };
 
-module.exports.dislikeCard = (req, next) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
     { $pull: { likes: req.user._id } }, // remove _id from the array
     { new: true },
   )
     .then((card) => {
       if (!card) {
-        throw new FoundError(404, 'No card found with that id');
+        throw new ServerError(404, 'No card found with that id');
       }
+      res.send(card);
     })
     .catch(next);
 };

@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
 const cors = require('cors');
-const { errors, celebrate, Joi } = require('celebrate');
+const { errors } = require('celebrate');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const { createUser, login } = require('./controllers/user');
@@ -33,7 +33,7 @@ app.get('*', (req, res) => {
   res.send({ message: 'Requested resource not found' });
 });
 
-//app.use(errorLogger);
+app.use(errorLogger);
 app.use((err, req, res, next) => {
   console.log(err);
   if (err.name === 'CastError') {
@@ -43,16 +43,16 @@ app.use((err, req, res, next) => {
     res.status(401).send({ message: 'Authorization Required' });
   }
   if (err.name === 'MongoServerError') {
-    res.status(409).send({ message: 'Request is conflicting with an already existing registration' });
+    res
+      .status(409)
+      .send({
+        message: 'Request is conflicting with an already existing registration',
+      });
   }
   const { statusCode = 500, message } = err;
-  res
-    .status(statusCode)
-    .send({
-      message: statusCode === 500
-        ? 'An error occurred on the server'
-        : message,
-    });
+  res.status(statusCode).send({
+    message: statusCode === 500 ? 'An error occurred on the server' : message,
+  });
 });
 
 app.listen(PORT);

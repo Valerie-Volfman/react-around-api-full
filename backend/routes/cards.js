@@ -4,7 +4,12 @@ const validator = require('validator');
 
 const router = express.Router();
 const {
-  getCard, getCards, createCard, deleteCard, likeCard, dislikeCard,
+  getCard,
+  getCards,
+  createCard,
+  deleteCard,
+  likeCard,
+  dislikeCard,
 } = require('../controllers/card');
 
 const validateURL = (value, helpers) => {
