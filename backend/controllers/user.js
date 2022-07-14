@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const ServerError = require('../errors/server-err');
 
+const { NODE_ENV, JWT_SECRET } = process.env;
 const options = { runValidators: true, new: true };
 
 module.exports.createUser = (req, res, next) => {
